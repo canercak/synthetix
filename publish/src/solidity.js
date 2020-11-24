@@ -50,6 +50,7 @@ module.exports = {
 		const flattenedContracts = {};
 
 		for (const contract of Object.keys(contracts)) {
+			console.log(contract);
 			const flattened = await solidifier.flatten({
 				files,
 				path: contract,

@@ -1,8 +1,8 @@
 pragma solidity ^0.5.16;
 
 // Inheritance
-import "./Owned.sol";
-import "./MixinResolver.sol";
+import "./InitializableOwned.sol";
+import "./InitializableMixinResolver.sol";
 import "./interfaces/ISynthetixBridgeToOptimism.sol";
 
 // Internal references
@@ -14,7 +14,7 @@ import "./interfaces/IIssuer.sol";
 import "@eth-optimism/contracts/build/contracts/iOVM/bridge/iOVM_BaseCrossDomainMessenger.sol";
 
 
-contract SynthetixBridgeToOptimism is Owned, MixinResolver, ISynthetixBridgeToOptimism {
+contract SynthetixBridgeToOptimism is InitializableOwned, InitializableMixinResolver, ISynthetixBridgeToOptimism {
     uint32 private constant CROSS_DOMAIN_MESSAGE_GAS_LIMIT = 3e6; //TODO: from constant to an updateable value
 
     /* ========== ADDRESS RESOLVER CONFIGURATION ========== */
@@ -36,7 +36,13 @@ contract SynthetixBridgeToOptimism is Owned, MixinResolver, ISynthetixBridgeToOp
 
     // ========== CONSTRUCTOR ==========
 
-    constructor(address _owner, address _resolver) public Owned(_owner) MixinResolver(_resolver, addressesToCache) {
+    // constructor(address _owner, address _resolver) public Owned(_owner) MixinResolver(_resolver, addressesToCache) {
+    //     activated = true;
+    // }
+
+    function initializeSynthetixBridgeToOptimism(address _owner, address _resolver) external initializer {
+        _initializeOwned(_owner);
+        _initializeMixinResolver(_resolver, addressesToCache);
         activated = true;
     }
 
