@@ -30,6 +30,7 @@ contract('SynthetixBridgeToOptimism (unit tests)', accounts => {
 				'migrateBridge',
 				'notifyRewardAmount',
 				'rewardDeposit',
+				'initializeSynthetixBridgeToOptimism',
 			],
 		});
 	});
@@ -88,10 +89,8 @@ contract('SynthetixBridgeToOptimism (unit tests)', accounts => {
 		describe('when the target is deployed', () => {
 			let instance;
 			beforeEach(async () => {
-				instance = await artifacts
-					.require('SynthetixBridgeToOptimism')
-					.new(owner, resolver.address);
-
+				instance = await artifacts.require('SynthetixBridgeToOptimism').new();
+				await instance.initializeSynthetixBridgeToOptimism(owner, resolver.address);
 				await instance.setResolverAndSyncCache(resolver.address, { from: owner });
 			});
 

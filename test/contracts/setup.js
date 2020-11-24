@@ -134,7 +134,7 @@ const setupContract = async ({
 
 	const defaultArgs = {
 		GenericMock: [],
-		SynthetixBridgeToOptimism: [owner, tryGetAddressOf('AddressResolver')],
+		SynthetixBridgeToOptimism: [],
 		SynthetixBridgeToBase: [owner, tryGetAddressOf('AddressResolver')],
 		TradingRewards: [owner, owner, tryGetAddressOf('AddressResolver')],
 		AddressResolver: [owner],
@@ -408,6 +408,9 @@ const setupContract = async ({
 						}) || []
 					)
 			);
+		},
+		async SynthetixBridgeToOptimism() {
+			await instance.initializeSynthetixBridgeToOptimism(owner, cache['AddressResolver'].address);
 		},
 		async Synth() {
 			await Promise.all(
