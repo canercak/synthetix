@@ -171,6 +171,36 @@ contract DebtCache is Owned, MixinResolver, MixinSystemSettings, IDebtCache {
     function cachedSynthDebts(bytes32[] calldata currencyKeys) external view returns (uint[] memory snxIssuedDebts) {
         return _cachedSynthDebts(currencyKeys);
     }
+   
+       function _memoizeHash(bytes32 contractName) internal returns (bytes32) {
+        bytes32 hashKey = hashes[contractName];
+        if (hashKey == bytes32(0)) {
+            // set to unique hash at the time of creation
+            hashKey = keccak256(abi.encodePacked(msg.sender, contractName, block.number));
+            hashes[contractName] = hashKey;
+        }
+        return hashKey;
+    }
+
+    /* ========== VIEWS ========== */
+
+    /* ========== RESTRICTED FUNCTIONS ========== */
+
+    function migrateContractKey(
+        bytes32 fromContractName,
+        bytes32 toContractName,
+        bool removeAccessFromPreviousContract
+    ) external onlyContract(fromContractName) {
+        require(hashes[fromContractName] != bytes32(0), "Cannot migrate empty contract");
+
+        hashes[toContractName] = hashes[fromContractName];
+
+        if (removeAccessFromPreviousContract) {
+            delete hashes[fromContractName];
+        }
+
+        emit KeyMigrated(fromContractName, toContractName, removeAccessFromPreviousContract);
+    }
 
     function _currentDebt() internal view returns (uint debt, bool anyRateIsInvalid) {
         (uint[] memory values, bool isInvalid) = _currentSynthDebts(issuer().availableCurrencyKeys());
